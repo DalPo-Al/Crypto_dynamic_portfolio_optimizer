@@ -14,14 +14,12 @@ Where **risk_penalty** represents investor risk aversion:
 
 The optimizer solves a **convex optimization problem** using `cvxpy`:
 
-\[
-\text{maximize } \mu^\top w - \lambda \cdot w^\top \Sigma w
-\]
+cp.Maximize(mu @ w - risk_penalty * cp.quad_form(w, sigma))
 
 **Constraints:**  
-- No short-selling: \(w_i \ge 0\)  
-- Fully invested: \(\sum_i w_i = 1\)  
-- Max weight per asset: \(w_i \le 0.25\)  
+- No short-selling: w>=0  
+- Fully invested: cp.sum(w)==1  
+- Max weight per asset: w <= 0.25  
 
 Performance is benchmarked against a **Buy & Hold strategy** with a static initial portfolio.
 
