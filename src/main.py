@@ -9,11 +9,11 @@ import numpy as np
 
 #PROJECT PARAMETERS
 tickers = ["ETH-USD", "SOL-USD", "AVAX-USD", "ADA-USD", "BTC-USD", "XRP-USD"]
-start_date="2024-01-01"
+start_date="2023-01-01"
 end_date="2025-01-01"
 window=30 #update portfolio every 30 days
-bullish_penalty=0.3
-bearish_penalty=0.8
+bullish_penalty=0.2
+bearish_penalty=0.9
 risk_penalty=0.5
 
 #DATA FETCHING
@@ -60,7 +60,7 @@ summary.to_csv("data/weights.csv")
 plt.figure(figsize=(10,6))
 plt.plot(result.index, result["Dynamic Strategy"],label="Dynamic Strategy", linewidth=2)
 plt.plot(result.index, result["Static Strategy"], label="Static Strategy", linestyle="--")
-plt.title("Backtest: Dynamic vs Static Strategy")
+plt.title("Backtest: Dynamic vs Static Strategy - Cumulative Return")
 plt.xlabel("Date")
 plt.ylabel("Cumulative Return")
 plt.grid(True)
@@ -73,5 +73,5 @@ print("result saved to data/backtest_results.csv")
 plt.figure(figsize=(10,6))
 labels=[f"{t}({w:.2f}%)" for t,w in zip(tickers, dynamic_weights)]   
 plt.pie(dynamic_weights, labels=labels)
-plt.title("Weights allocation of the month")
+plt.title("Percentage allocation considering last month")
 plt.show()
