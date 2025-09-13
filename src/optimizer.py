@@ -1,5 +1,5 @@
 #optimization engine of the project
-#optimization logic: SHARPE RATIO MAXIMIZATION
+#optimization logic: cp.Maximize(mu @ w - risk_penalty * cp.quad_form(w, sigma))
 
 import pandas as pd
 import numpy as np
@@ -22,9 +22,12 @@ def optimize_portfolio(prices, risk_penalty):
   
   # objective function
   obj = cp.Maximize(mu @ w - risk_penalty * cp.quad_form(w, sigma))
-  
+  #risk_penalty = adversion to risk of investor
+  #risk_penalty high => focus on reducing the risk
+  #risk_penalty low => focus on max the return
+
   # constraints
-  constraints=[w>=0, cp.sum(w)==1]
+  constraints=[w>=0, cp.sum(w)==1, w <= 0.25] #we impose max 25% per asset to avoid corner solution
   cp.Problem(obj, constraints).solve()
   weights=np.array(w.value).flatten() #(3,)
   
@@ -40,11 +43,11 @@ def optimize_portfolio(prices, risk_penalty):
   }
   return results
 
-if __name__=="__main__":
-  prices=pd.read_csv("data/crypto_data.csv", index_col=0, parse_dates=True)
-  result=optimize_portfolio(prices, risk_penalty=0.5)
-  print("Optimized portfolio weights:")
-  print(result["optimal_weights"])
-  print(f"Expected return: {result['expected_return_portfolio']:.4f}")
-  print(f"Volatility: {result['portfolio_volatility']:.4f}")
-  print(f"Sharpe ratio: {result['portfolio_sharpe']:.4f}")
+#if __name__=="__main__":
+#  prices=pd.read_csv("data/crypto_data.csv", index_col=0, parse_dates=True)
+#  result=optimize_portfolio(prices, risk_penalty=0.5)
+#  print("Optimized portfolio weights:")
+#  print(result["optimal_weights"])
+#  print(f"Expected return: {result['expected_return_portfolio']:.4f}")
+#  print(f"Volatility: {result['portfolio_volatility']:.4f}")
+#  print(f"Sharpe ratio: {result['portfolio_sharpe']:.4f}")
