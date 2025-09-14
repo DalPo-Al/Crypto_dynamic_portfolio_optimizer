@@ -65,7 +65,10 @@ plt.xlabel("Date")
 plt.ylabel("Cumulative Return")
 plt.grid(True)
 plt.legend()
+plt.savefig("plot/backtest_comparison.png", dpi=300, bbox_inches="tight")
 plt.show()
+
+
 result.to_csv("data/backtest_results.csv")
 print("result saved to data/backtest_results.csv")
 
@@ -74,4 +77,5 @@ plt.figure(figsize=(10,6))
 labels=[f"{t}({w:.2f}%)" for t,w in zip(tickers, dynamic_weights)]   
 plt.pie(dynamic_weights, labels=labels)
 plt.title("Percentage allocation considering last month")
+plt.savefig("plot/asset_allocation.png", dpi=300, bbox_inches="tight")
 plt.show()
