@@ -8,12 +8,12 @@ import pandas as pd
 import numpy as np
 
 #PROJECT PARAMETERS
-tickers = ["ETH-USD", "SOL-USD", "AVAX-USD", "ADA-USD", "BTC-USD", "XRP-USD"]
-start_date="2023-01-01"
+tickers = ["BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD", "ADA-USD", "XRP-USD", "LINK-USD"]
+start_date="2022-01-01"
 end_date="2025-01-01"
 window=30 #update portfolio every 30 days
 bullish_penalty=0.2
-bearish_penalty=0.9
+bearish_penalty=0.8
 risk_penalty=0.5
 
 #DATA FETCHING
@@ -40,7 +40,7 @@ stat=performance_stats(static_portfolio_return)
 
 results_df=pd.DataFrame({
   "Sharpe Ratio": [np.round(dyn["Sharpe Ratio"], 3),np.round(stat["Sharpe Ratio"],3)],
-  "Cumulative Return[%]":[np.round(dyn["Cumulative Return"]*100, 3), np.round(stat["Cumulative Return"]*100, 3)],
+  "Cumulative Return[%]":[np.round(dynamic_portfolio_return.cumsum()*100, 3), np.round(static_portfolio_return.cumsum()*100, 3)],
 }, index=["Dynamic Strategy", "Static Strategy"])
 
 weights_df =pd.DataFrame({
@@ -52,30 +52,33 @@ print("\nPerformance comparison:")
 print(summary)
 summary.to_csv("data/weights.csv")
 
-#print(results_df)
-#print(weights_df)
+dyn_ret=np.round(dynamic_portfolio_return.cumsum().iloc[-1]*100, 2)
+stat_ret=np.round(static_portfolio_return.cumsum().iloc[-1]*100, 2)
+
+print(f"Static portfolio cumulative return: {stat_ret} %")
+print(f"Dynamic portfolio cumulative return: {dyn_ret} %")
+print(f"Dynamic outperformed Static of: {(dyn_ret)-(stat_ret)}%")
+
+#RESULT SAVING
+result.to_csv("data/backtest_results.csv")
+print("result saved to data/backtest_results.csv")
 
 #RESULT PLOTTING
 #cumulative return of portfolios
 plt.figure(figsize=(10,6))
-plt.plot(result.index, result["Dynamic Strategy"],label="Dynamic Strategy", linewidth=2)
-plt.plot(result.index, result["Static Strategy"], label="Static Strategy", linestyle="--")
+plt.plot(dynamic_portfolio_return.index, dynamic_portfolio_return.cumsum()*100, label="Dynamic Strategy", linewidth=2)
+plt.plot(static_portfolio_return.index, static_portfolio_return.cumsum()*100, label="Static Strategy", linestyle="--")
 plt.title("Backtest: Dynamic vs Static Strategy - Cumulative Return")
-plt.xlabel("Date")
-plt.ylabel("Cumulative Return")
-plt.grid(True)
+plt.ylabel("Cumulative return [%]")
 plt.legend()
+plt.grid(True)
 plt.savefig("plot/backtest_comparison.png", dpi=300, bbox_inches="tight")
 plt.show()
-
-
-result.to_csv("data/backtest_results.csv")
-print("result saved to data/backtest_results.csv")
 
 #pie chart of final weights for the month
 plt.figure(figsize=(10,6))
 labels=[f"{t}({w:.2f}%)" for t,w in zip(tickers, dynamic_weights)]   
 plt.pie(dynamic_weights, labels=labels)
-plt.title("Percentage allocation considering last month")
+plt.title("Portfolio allocation (last, dynamic)")
 plt.savefig("plot/asset_allocation.png", dpi=300, bbox_inches="tight")
 plt.show()

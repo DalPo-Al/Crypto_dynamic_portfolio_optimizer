@@ -27,7 +27,7 @@ def optimize_portfolio(prices, risk_penalty):
   #risk_penalty low => focus on max the return
 
   # constraints
-  constraints=[w>=0, cp.sum(w)==1, w <= 0.25] #we impose max 25% per asset to avoid corner solution
+  constraints=[w>=0, cp.sum(w)==1, w <= 0.20] #we impose max 20% per asset to avoid corner solution
   cp.Problem(obj, constraints).solve()
   weights=np.array(w.value).flatten() #(3,)
   

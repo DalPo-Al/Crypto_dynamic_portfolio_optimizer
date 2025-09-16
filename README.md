@@ -19,7 +19,7 @@ cp.Maximize(mu @ w - risk_penalty * cp.quad_form(w, sigma))
 **Constraints:**  
 - No short-selling: w>=0  
 - Fully invested: cp.sum(w)==1  
-- Max weight per asset: w <= 0.25  
+- Max weight per asset: w <= 0.20  
 
 Performance is benchmarked against a **Buy & Hold strategy** with a static initial portfolio.
 
@@ -28,13 +28,14 @@ Performance is benchmarked against a **Buy & Hold strategy** with a static initi
 ## Features
 - Fetch historical crypto prices via **Yahoo Finance API**.  
 - Optimize portfolio allocation using **convex optimization** (`cvxpy`) with risk penalty.  
-- Detect **market regimes** using moving average crossover (50-day vs 200-day).  
+- Detect **market regimes** using moving average crossover (50-day vs 200-day) on BTC-USD price, assuming the strong impact this crypto has in defining market regime.  
 - Apply **rebalancing costs** proportional to portfolio turnover.  
 - Compare dynamic rebalancing vs Buy & Hold in a **backtesting framework**.  
 - Calculate key **performance metrics**: cumulative return, volatility, Sharpe ratio.  
 - Save results as **CSV** for further analysis.  
 - Plot **cumulative returns** over time.  
 - Plot **final optimal portfolio weights** as a pie chart.
+- Save plots made in folder /plot for better visualization
 
 ---
 
