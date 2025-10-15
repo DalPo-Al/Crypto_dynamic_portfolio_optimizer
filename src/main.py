@@ -40,7 +40,7 @@ stat=performance_stats(static_portfolio_return)
 
 results_df=pd.DataFrame({
   "Sharpe Ratio": [np.round(dyn["Sharpe Ratio"], 3),np.round(stat["Sharpe Ratio"],3)],
-  "Cumulative Return[%]":[np.round(dynamic_portfolio_return.cumsum()*100, 3), np.round(static_portfolio_return.cumsum()*100, 3)],
+  "Cumulative Return[%]":[np.round(((1+dynamic_portfolio_return).cumprod()-1)*100, 3), np.round(((1+static_portfolio_return).cumprod()-1)*100, 3)],
 }, index=["Dynamic Strategy", "Static Strategy"])
 
 weights_df =pd.DataFrame({
@@ -52,8 +52,10 @@ print("\nPerformance comparison:")
 print(summary)
 summary.to_csv("data/weights.csv")
 
-dyn_ret=np.round(dynamic_portfolio_return.cumsum().iloc[-1]*100, 2)
-stat_ret=np.round(static_portfolio_return.cumsum().iloc[-1]*100, 2)
+
+
+dyn_ret=np.round(((1+dynamic_portfolio_return).cumprod()-1).iloc[-1], 2)
+stat_ret=np.round(((1+static_portfolio_return).cumprod()-1).iloc[-1], 2)
 
 print(f"Static portfolio cumulative return: {stat_ret} %")
 print(f"Dynamic portfolio cumulative return: {dyn_ret} %")
@@ -65,9 +67,11 @@ print("result saved to data/backtest_results.csv")
 
 #RESULT PLOTTING
 #cumulative return of portfolios
+dynamic_portfolio_return=np.round(((1+dynamic_portfolio_return).cumprod()-1), 2)
+static_portfolio_return=np.round(((1+static_portfolio_return).cumprod()-1), 2)
 plt.figure(figsize=(10,6))
-plt.plot(dynamic_portfolio_return.index, dynamic_portfolio_return.cumsum()*100, label="Dynamic Strategy", linewidth=2)
-plt.plot(static_portfolio_return.index, static_portfolio_return.cumsum()*100, label="Static Strategy", linestyle="--")
+plt.plot(dynamic_portfolio_return.index, dynamic_portfolio_return, label="Dynamic Strategy", linewidth=2)
+plt.plot(static_portfolio_return.index, static_portfolio_return, label="Static Strategy", linestyle="--")
 plt.title("Backtest: Dynamic vs Static Strategy - Cumulative Return")
 plt.ylabel("Cumulative return [%]")
 plt.legend()

@@ -1,57 +1,57 @@
-# Crypto Portfolio Optimizer
+### Crypto Portfolio Optimizer
+In this project i am interested in estimating the difference in cumulative returns between a dynamic portfolio and a static portfolio based on market regime detection for rebalancing switch. The main question is, using a financial asset that is extremely volatile for definition, what is the best strategy between a static portfolio held for the time period, and   a dynamic portfolio with monthly rebalancing based on signals created from a market regime detection estimator (bullish vs bearish) with transaction cost on turnover of weights?
 
-## Description
-Dynamic **crypto portfolio optimizer** with **monthly rebalancing**, transaction costs (0.1%), and **market regime detection** (bullish vs bearish).  
+We use the crypto market to try to handle a financial object that is extremely volatile for definition.
 
-The optimizer adjusts the **risk penalty** parameter (\(\lambda\)) according to market regime:  
+### Optimization engine
+For the optimization of the portfolio weights we use the Mean Variance Optimization engine (MVO) that is a convex problem of maximization, that we solve using cvxpy library.
 
-- **Bullish:** `bullish_penalty = 0.3`  
+### The market regime detection
+In MVO fundamental is the parameter (\lambda)\ i have defined as **risk_penalty** variable. Formally, we estimate the weights according to a different value of risk_penalty according to signal generated from market regime detector.
+
+- **Bullish:** `bullish_penalty = 0.2`  
 - **Bearish:** `bearish_penalty = 0.8`  
 
-Where **risk_penalty** represents investor risk aversion:  
-- High → prioritize **risk reduction**  
-- Low → prioritize **return maximization**  
+I recall that **risk_penalty** represents investor risk aversion so:  
+- High → prioritize **risk reduction** of portfolio  
+- Low → prioritize **return maximization** of portfolio 
 
-The optimizer solves a **convex optimization problem** using `cvxpy`:
-
+### MVO equation used
 cp.Maximize(mu @ w - risk_penalty * cp.quad_form(w, sigma))
 
-**Constraints:**  
-- No short-selling: w>=0  
-- Fully invested: cp.sum(w)==1  
-- Max weight per asset: w <= 0.20  
+### Constraints imposed  
+- **No short-selling** so weights of portfolio have to be positive => **w>=0**   
+- **Fully invested capital** so we ensure the entirety of capital is invested and not held as liquidity => **cp.sum(w)==1**  
+- **Limit to single exposure** since i want to ensure diversification in portfolio and avoid the divergence of the problem in allocating all resources into a single asset (that is financially absurd in portfolio management) => **w <= 0.20**  
 
-Performance is benchmarked against a **Buy & Hold strategy** with a static initial portfolio.
+### Market regime detection system
+In order to provide a signal i have defined arbitrarily two market conditions moving average crossover strategy on BTC-USD crypto since i have assumed (by observation of past events) that BTC is the trend maker for the crypto market.
+In the specific i have used a Moving average crossover strategy using 200 moving average against 50 moving average.
 
----
+Formally:
+if MA(50)>MA(200) => GOLDEN CROSS => BULL MARKET => 1
+if MA(50)<=MA(200) => DEATH CROSS => BEAR MARKET => 0
 
-## Features
-- Fetch historical crypto prices via **Yahoo Finance API**.  
-- Optimize portfolio allocation using **convex optimization** (`cvxpy`) with risk penalty.  
-- Detect **market regimes** using moving average crossover (50-day vs 200-day) on BTC-USD price, assuming the strong impact this crypto has in defining market regime.  
-- Apply **rebalancing costs** proportional to portfolio turnover.  
-- Compare dynamic rebalancing vs Buy & Hold in a **backtesting framework**.  
-- Calculate key **performance metrics**: cumulative return, volatility, Sharpe ratio.  
-- Save results as **CSV** for further analysis.  
-- Plot **cumulative returns** over time.  
-- Plot **final optimal portfolio weights** as a pie chart.
-- Save plots made in folder /plot for better visualization
+The plot of two curves can be seen in plot/MACS.jpg
 
----
+### Backtesting
+I am interested in defining using in sample testing if the strategy would have been profitable over the time period 2022-2024, so if dynamic portfolio would has been better than a static buy and hold. To do so i have performed a rolling window approach using the window of 1 month (rounghly 30 periods) considering a per unit turnover cost of 0.1% (so 0.001).
 
-## File Structure
-crypto-portfolio-optimizer/
-│
-├─ src/
-│ ├─ main.py                # Integrates all modules and runs backtest
-│ ├─ optimizer.py           # Portfolio optimization logic
-│ ├─ data_fetch.py          # Fetch historical crypto data
-│ ├─ market_regime.py       # Market regime detection
-│ └─ backtest.py            # Rolling-window backtesting framework
-│
-├─ data/
-│ ├─ crypto_data.csv        # Historical price data
-│ └─ backtest_results.csv   # Backtest output
-│
-├─ README.md
-└─ requirements.txt
+The cumulative return can be seen in plot/backtest_comparison.jpg
+
+### Weights computation for last period
+Finally i was interested in computing last list of weights for the portfolio and plot them as pie chart, the plot can be seen in plot/asset_allocation.jpg that is valid for last period considered.
+
+### Metrics computation
+I have computed Sharpe Ratio and Cumulative last return to compare the strategies and take conclusions.
+
+|Portfolio | Sharpe Ratio | Cumulative Return [%] |
+|----------|--------------|-----------------------|
+|Dynamic   |         1.240|                  11.51|
+|Static    |         0.549|                   1.19|
+
+sharpe computed with risk_free_rate of 0.3% of 1 YEAR US TBILL.
+
+
+### Conclustions
+Based on current information, the Dynamic Portfolio outperformed the Static Portfolio by +10.32%. This performance gap likely reflects the higher volatility of the underlying assets, which the dynamic allocation managed more efficiently. Moreover, the Dynamic Portfolio achieved a Sharpe Ratio higher by +1.240, indicating a superior risk-adjusted return.

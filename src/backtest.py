@@ -5,7 +5,7 @@ from optimizer import optimize_portfolio
 from market_regime import detect_market_regime
 import matplotlib.pyplot as plt
   
-def backtest(prices,window, bullish_penalty, bearish_penalty, transaction_cost=0.1):
+def backtest(prices,window, bullish_penalty, bearish_penalty, transaction_cost=0.001):
   asset_returns=prices.pct_change().dropna() #(1095, 3)
   
   #DYNAMIC STRATEGY
@@ -62,9 +62,10 @@ def backtest(prices,window, bullish_penalty, bearish_penalty, transaction_cost=0
 
 def performance_stats(strategy_returns):
   expected_return=strategy_returns.mean()
+  risk_free_return=0.033/252 #to have dailt return of risk free asset
   standard_deviation_return=strategy_returns.std()
-  sharpe_ratio=expected_return/standard_deviation_return * np.sqrt(252) if standard_deviation_return>0 else 0 #annualized sharpe ratio
-  cumulative_return=(1+strategy_returns).prod()-1 #known formula
+  sharpe_ratio=(expected_return-risk_free_return)/standard_deviation_return * np.sqrt(252) if standard_deviation_return>0 else 0 #annualized sharpe ratio
+  cumulative_return=(1+strategy_returns).cumprod()-1 #known formula
 
   stats={
     "Cumulative Return": cumulative_return,
