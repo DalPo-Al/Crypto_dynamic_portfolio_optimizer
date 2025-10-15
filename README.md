@@ -29,8 +29,8 @@ In order to provide a signal i have defined arbitrarily two market conditions mo
 In the specific i have used a Moving average crossover strategy using 200 moving average against 50 moving average.
 
 Formally:
-if MA(50)>MA(200) => GOLDEN CROSS => BULL MARKET => 1
-if MA(50)<=MA(200) => DEATH CROSS => BEAR MARKET => 0
+- if MA(50)>MA(200) => GOLDEN CROSS => BULL MARKET => 1
+- if MA(50)<=MA(200) => DEATH CROSS => BEAR MARKET => 0
 
 The plot of two curves can be seen in plot/MACS.jpg
 
