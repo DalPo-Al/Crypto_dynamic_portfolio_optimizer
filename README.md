@@ -53,5 +53,5 @@ I have computed Sharpe Ratio and Cumulative last return to compare the strategie
 sharpe computed with risk_free_rate of 0.3% of 1 YEAR US TBILL.
 
 
-### Conclustions
-Based on current information, the Dynamic Portfolio outperformed the Static Portfolio by +10.32%. This performance gap likely reflects the higher volatility of the underlying assets, which the dynamic allocation managed more efficiently. Moreover, the Dynamic Portfolio achieved a Sharpe Ratio higher by +1.240, indicating a superior risk-adjusted return.
+### Conclusions
+Based on current information, the Dynamic strategy outperformed the Static one by +10.32%. This performance gap likely reflects the higher volatility of the underlying assets, which the dynamic allocation managed more efficiently. Moreover, the Dynamic Portfolio achieved a Sharpe Ratio higher by +1.240, indicating a superior risk-adjusted return.
